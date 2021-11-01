@@ -22,7 +22,6 @@ extension ProvidersExtension on Providers {
     switch (this) {
       case Providers.moviesCo:
         return MoviesCo();
-
       case Providers.moviesTechHub:
         // TODO: Handle this case.
         break;

@@ -41,6 +41,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
                             );
                           })))
                       .catchError((e) {
+                    print(e);
                     Fluttertoast.showToast(
                         msg: 'Provider not available: $e', toastLength: Toast.LENGTH_LONG);
                     return -1;

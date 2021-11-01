@@ -52,7 +52,7 @@ class TVShow extends Watchable {
   Map toJson() => {
         'tv': true,
         'id': id,
-        'title': title,
+        'name': title,
         'overview': description,
         'backdrop_path': backdropPath,
         'poster_path': cardImagePath,

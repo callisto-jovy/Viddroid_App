@@ -41,6 +41,23 @@ class TheMovieDBTVDetailsRequestTask {
 
     var seasons = resp['seasons'];
 
+    if (seasons.length == 1) {
+      tvShow.addSeason(-1, Season(0));
+      String seasonEndpoint = the_movie_db.formatRequest(
+          the_movie_db.TheMovieDBAPIEndpoints.tvDetails, tvShow.id.toString() + "/season/1");
+
+      var seasonResp = await http.get(Uri.parse(seasonEndpoint),
+          headers: {"User-Agent": getRandomUserAgent()}).then((value) => jsonDecode(value.body));
+      var seasonEpisodes = seasonResp['episodes'];
+
+      for (int j = 0; j < seasonEpisodes.length; j++) {
+        tvShow.getSeasons[0]
+            .addEpisode(Episode(seasonEpisodes[j]['name'], j, 1, seasonEpisodes[j]['still_path']));
+      }
+
+      return;
+    }
+
     for (int i = 0; i < seasons.length; i++) {
       tvShow.addSeason(-1, Season(i));
 
