@@ -1,16 +1,13 @@
 # viddroid_flutter
 
-Viddroid Application written in Dart, in order to get the basics down
+Recreation of the Viddroid Android-TV application, in order to get the flutter & dart basics down.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### **Libraries used**
+  - [HTML](https://pub.dev/packages/html) to parse html
+  - [Shared_Preferences](https://pub.dev/packages/shared_preferences) to store favorites & bookmarks
+  - [Flutter Toast](https://pub.dev/packages/fluttertoast) to display toasts & inform the user
+  - [JS_Packer](https://pub.dev/packages/js_packer) to unpack P.A.C.K.E.D JavaScript
+  - [Video_Player](https://pub.dev/packages/video_player) to play videos
+  - [Chewie](https://pub.dev/packages/chewie) to add material controls to the video player
+  - 
