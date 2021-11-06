@@ -13,7 +13,7 @@ class Gomo extends Streamer with MoviesCoAPI {
   @override
   Future<PassableURL> resolveStreamURL(String? referral, {Map<String, String>? headers}) async {
     if (referral == null) {
-      return Future.error('No referral');
+      return Future.error('Gomo referral is null');
     }
 
     headers ??= {};

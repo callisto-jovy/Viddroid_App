@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:viddroid_flutter/pages/search_page.dart';
+import 'package:viddroid_flutter/util/basic_util.dart';
 import 'package:viddroid_flutter/watchable/watchables.dart';
 import 'package:viddroid_flutter/widgets/watchable_list.dart';
 
 void main() async {
+  HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
-  Watchables().init();
+  await Watchables().init();
   runApp(const MyApp());
 }
 
@@ -35,11 +39,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(

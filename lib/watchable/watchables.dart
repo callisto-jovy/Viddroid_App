@@ -16,7 +16,7 @@ class Watchables {
 
   SharedPreferences? _prefs;
 
-  void init() async {
+  Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
     loadWatchables();
   }
@@ -51,9 +51,6 @@ class Watchables {
 
   void remove(Watchable watchable) {
     watchables.removeWhere((element) => element.id == watchable.id);
-  }
-
-  void removeID(int id) {
-    watchables.removeWhere((element) => element.id == id);
+    saveWatchables();
   }
 }

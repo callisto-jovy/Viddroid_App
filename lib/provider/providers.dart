@@ -1,16 +1,17 @@
 import 'package:viddroid_flutter/provider/provider.dart';
+import 'package:viddroid_flutter/provider/providers/best_movies_watch.dart';
 import 'package:viddroid_flutter/provider/providers/movies_co.dart';
 import 'package:viddroid_flutter/provider/providers/video_vak_com.dart';
 
-enum Providers { moviesCo, moviesTechHub, videovakCom }
+enum Providers { moviesCo, bestmoviesWatch, videovakCom }
 
 extension ProvidersExtension on Providers {
   String get name {
     switch (this) {
       case Providers.moviesCo:
         return 'Movies.Co';
-      case Providers.moviesTechHub:
-        return 'Moviestech.hub';
+      case Providers.bestmoviesWatch:
+        return 'Bestmovies.watch';
       case Providers.videovakCom:
         return 'Videovak.com';
       default:
@@ -22,12 +23,10 @@ extension ProvidersExtension on Providers {
     switch (this) {
       case Providers.moviesCo:
         return MoviesCo();
-      case Providers.moviesTechHub:
-        // TODO: Handle this case.
-        break;
+      case Providers.bestmoviesWatch:
+        return BestMoviesWatch();
       case Providers.videovakCom:
         return VideoVakCom();
     }
-    return MoviesCo();
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
@@ -26,11 +27,11 @@ class MoviesCoAPI {
   RegExp rndNumRegex = RegExp(r'\+ "(\d+)"\+"(\d+)');
 
   //Pattern UNPACKER_PATTERN = Pattern.compile("eval\\(function\\(p,a,c,k,e,d\\)(.*)+\\)");
-  //(?<=sources:[\{file:")[^"]+
+
   RegExp sourceRegex = RegExp(r'(?<=sources:\[\{file:")[^"]+');
 
   RegExp onClickRegex =
-      RegExp(r"""onclick=\"download_video\\('([^']+)','([^']+)','([^']+)'\\)""", multiLine: true);
+      RegExp(r"""onclick="download_video\('([^']+)','([^']+)','([^']+)'\)""", multiLine: true);
 
   RegExp directDownloadRegex =
       RegExp(r"""<a href="([^"]+)">Direct Download Link</a>""", multiLine: true);
@@ -45,6 +46,9 @@ class MoviesCoAPI {
 class MoviesCo extends Provider with MoviesCoAPI {
   @override
   Future<PassableURL> requestMovieLink(Movie watchable) async {
+    HttpClient client = HttpClient();
+    client.badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
+
     var response = await http.get(Uri.parse(formatMovieRequest(watchable)), headers: {
       'User-Agent': getRandomUserAgent(),
     });
@@ -53,7 +57,7 @@ class MoviesCo extends Provider with MoviesCoAPI {
       var document = parse(response.body);
       Element iFrame = document.getElementsByTagName('iframe').first;
 
-      return Streamers.GOMO.streamer!.resolveStreamURL(iFrame.attributes['src']);
+      return Streamers.gomo.streamer!.resolveStreamURL(iFrame.attributes['src']);
     } else {
       return Future.error('Request Movie link');
     }
@@ -70,7 +74,7 @@ class MoviesCo extends Provider with MoviesCoAPI {
       if (iFrame == null) {
         return Future.error('iframe not found');
       } else {
-        return Streamers.GOMO.streamer!.resolveStreamURL(iFrame.attributes['src']);
+        return Streamers.gomo.streamer!.resolveStreamURL(iFrame.attributes['src']);
       }
     } else {
       return Future.error('Request Tv Link');

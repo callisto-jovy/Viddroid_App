@@ -33,7 +33,11 @@ class TheMovieDBSearchTVTask {
 }
 
 class TheMovieDBTVDetailsRequestTask {
-  void call(TVShow tvShow) async {
+  Future<List<Season>> call(TVShow tvShow) async {
+    if (tvShow.getSeasons.isNotEmpty) {
+      return tvShow.getSeasons;
+    }
+
     String endpoint = the_movie_db.formatRequest(
         the_movie_db.TheMovieDBAPIEndpoints.tvDetails, tvShow.id.toString());
     var resp = await http.get(Uri.parse(endpoint),
@@ -54,25 +58,24 @@ class TheMovieDBTVDetailsRequestTask {
         tvShow.getSeasons[0]
             .addEpisode(Episode(seasonEpisodes[j]['name'], j, 1, seasonEpisodes[j]['still_path']));
       }
+    } else {
+      for (int i = 0; i < seasons.length; i++) {
+        tvShow.addSeason(-1, Season(i));
 
-      return;
-    }
+        String seasonEndpoint = the_movie_db.formatRequest(
+            the_movie_db.TheMovieDBAPIEndpoints.tvDetails, tvShow.id.toString() + "/season/$i");
 
-    for (int i = 0; i < seasons.length; i++) {
-      tvShow.addSeason(-1, Season(i));
+        var seasonResp = await http.get(Uri.parse(seasonEndpoint),
+            headers: {"User-Agent": getRandomUserAgent()}).then((value) => jsonDecode(value.body));
 
-      String seasonEndpoint = the_movie_db.formatRequest(
-          the_movie_db.TheMovieDBAPIEndpoints.tvDetails, tvShow.id.toString() + "/season/$i");
+        var seasonEpisodes = seasonResp['episodes'];
 
-      var seasonResp = await http.get(Uri.parse(seasonEndpoint),
-          headers: {"User-Agent": getRandomUserAgent()}).then((value) => jsonDecode(value.body));
-
-      var seasonEpisodes = seasonResp['episodes'];
-
-      for (int j = 0; j < seasonEpisodes.length; j++) {
-        tvShow.getSeasons[i]
-            .addEpisode(Episode(seasonEpisodes[j]['name'], j, i, seasonEpisodes[j]['still_path']));
+        for (int j = 0; j < seasonEpisodes.length; j++) {
+          tvShow.getSeasons[i].addEpisode(
+              Episode(seasonEpisodes[j]['name'], j, i, seasonEpisodes[j]['still_path']));
+        }
       }
     }
+    return tvShow.getSeasons;
   }
 }

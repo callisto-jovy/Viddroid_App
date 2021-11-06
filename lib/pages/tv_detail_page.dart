@@ -7,6 +7,7 @@ import 'package:viddroid_flutter/cards/general_purpose_card.dart';
 import 'package:viddroid_flutter/provider/providers.dart';
 import 'package:viddroid_flutter/tasks/request_metadata_task.dart';
 import 'package:viddroid_flutter/watchable/episode.dart';
+import 'package:viddroid_flutter/watchable/season.dart';
 import 'package:viddroid_flutter/watchable/watchable.dart';
 import 'package:viddroid_flutter/widgets/widgets_viddroid.dart';
 
@@ -29,11 +30,6 @@ class TVShowDetailPageState extends State<TVShowDetailPage> {
 
   @override
   void initState() {
-    if ((widget._tv).getSeasons.isEmpty) {
-      TheMovieDBTVDetailsRequestTask().call(widget._tv);
-    }
-
-    _episodes.add(widget._tv.getSeasons[_selectedSeason].episodes); //Fill with seasons[0]
     super.initState();
   }
 
@@ -51,22 +47,21 @@ class TVShowDetailPageState extends State<TVShowDetailPage> {
                 Episode data = snapshot.data![index];
                 return GeneralPurposeCard(
                   title: data.name,
-                  upperCaption: data.index.toString(),
-                  onTap: () =>
-                      Providers.values[_selectedProvider].provider
-                          .requestTVShowLink(widget._tv, data.season, data.index + 1)
-                          .then((value) =>
+                  upperCaption: 'Episode ${data.index}',
+                  onTap: () => Providers.values[_selectedProvider].provider
+                      .requestTVShowLink(widget._tv, data.season, data.index + 1)
+                      .then((value) =>
                           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                             return VideoPlayer(
                               passableURL: value,
                             );
                           })))
-                          .catchError((e) {
-                        print(e);
-                        Fluttertoast.showToast(
-                            msg: 'Provider not available: $e', toastLength: Toast.LENGTH_LONG);
-                        return -1;
-                      }),
+                      .catchError((e) {
+                    print(e);
+                    Fluttertoast.showToast(
+                        msg: 'Provider not available: $e', toastLength: Toast.LENGTH_LONG);
+                    return -1;
+                  }),
                   imageHeight: 169 / 1.5,
                   imageWidth: 300 / 1.5,
                   imageURL: data.getSeasonPosterPath(),
@@ -82,21 +77,31 @@ class TVShowDetailPageState extends State<TVShowDetailPage> {
   Widget get seasonSelector {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
-      child: DropdownButton(
-        hint: const Text('Seasons'),
-        value: _selectedSeason,
-        items: [
-          for (int i = 0; i < widget._tv.getSeasons.length; i++)
-            DropdownMenuItem(
-              child: Text('Season $i'),
-              value: i,
-            )
-        ],
-        onChanged: (value) {
-          setState(() {
-            _selectedSeason = value as int;
-          });
-          _episodes.add(widget._tv.getSeasons[_selectedSeason].episodes);
+      child: FutureBuilder(
+        future: TheMovieDBTVDetailsRequestTask().call(widget._tv),
+        builder: (context, AsyncSnapshot<List<Season>> snapshot) {
+          if (snapshot.hasData) {
+            List<Season> seasons = snapshot.data!;
+            return DropdownButton(
+              hint: const Text('Seasons'),
+              value: _selectedSeason,
+              items: [
+                for (int i = 0; i < seasons.length; i++)
+                  DropdownMenuItem(
+                    child: Text('Season $i'),
+                    value: i,
+                  )
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _selectedSeason = value as int;
+                });
+                _episodes.add(seasons[value as int].episodes);
+              },
+            );
+          } else {
+            return const CircularProgressIndicator();
+          }
         },
       ),
     );
@@ -133,15 +138,14 @@ class TVShowDetailPageState extends State<TVShowDetailPage> {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-              onPressed: () =>
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return FavoriteBottomSheetDialog(watchable: widget._tv);
-                      },
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)))),
+              onPressed: () => showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return FavoriteBottomSheetDialog(watchable: widget._tv);
+                  },
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)))),
               icon: const Icon(Icons.favorite)),
         ],
       ),

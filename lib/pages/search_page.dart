@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:viddroid_flutter/cards/watchable_card.dart';
 import 'package:viddroid_flutter/tasks/request_metadata_task.dart';
 import 'package:viddroid_flutter/watchable/watchable.dart';
+import 'package:viddroid_flutter/watchable/watchables.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -76,7 +77,17 @@ class SearchPageState extends State<SearchPage> {
                 return ListView.builder(
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, i) {
-                    return WatchableCard(snapshot.data![i]);
+                    Watchable watchable = snapshot.data![i];
+                    return WatchableCard(watchable, confirmDismiss: (direction) async {
+                      if (direction == DismissDirection.endToStart) {
+                        setState(() {
+                          if (!Watchables().contains(watchable)) {
+                            Watchables().addWatchable(watchable);
+                          }
+                        });
+                      }
+                      return false;
+                    }, dismissColor: Colors.green[400]!);
                   },
                 );
               } else if (snapshot.hasError) {
