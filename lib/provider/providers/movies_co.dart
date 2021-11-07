@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
@@ -46,9 +45,6 @@ class MoviesCoAPI {
 class MoviesCo extends Provider with MoviesCoAPI {
   @override
   Future<PassableURL> requestMovieLink(Movie watchable) async {
-    HttpClient client = HttpClient();
-    client.badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
-
     var response = await http.get(Uri.parse(formatMovieRequest(watchable)), headers: {
       'User-Agent': getRandomUserAgent(),
     });
