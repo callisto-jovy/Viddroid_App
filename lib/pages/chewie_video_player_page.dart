@@ -31,6 +31,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
         aspectRatio: 16 / 9,
         allowedScreenSleep: false,
         allowMuting: true,
+        autoPlay: true,
         errorBuilder: (context, errorMessage) {
           return Center(
             child: Text(

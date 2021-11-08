@@ -1,13 +1,13 @@
 import 'dart:io';
 
 class StringUtil {
-  static const String allowedURLSpecialChars = r'[^\$–_.+!*‘(),\p{L}\p{N}]';
+  static const String allowedURLSpecialChars = r'[^–\p{L}\p{N}]';
 
   static String dashes(final String string) =>
-      string.replaceAll(RegExp(allowedURLSpecialChars, unicode: true), " ").replaceAll(RegExp(r'\s+'), "-");
+      string.replaceAll(RegExp(allowedURLSpecialChars, unicode: true), " ").trim().replaceAll(RegExp(r'\s+'), "-");
 
   static String underscores(final String string) =>
-      string.replaceAll(RegExp(allowedURLSpecialChars, unicode: true), " ").replaceAll(RegExp(r'\s+'), "_");
+      string.replaceAll(RegExp(allowedURLSpecialChars, unicode: true), " ").trim().replaceAll(RegExp(r'\s+'), "_");
 }
 
 extension StringExtension on String {
