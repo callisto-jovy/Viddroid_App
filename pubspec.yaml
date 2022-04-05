@@ -36,9 +36,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   html: ^0.15.0
   shared_preferences: ^2.0.8
-  connectivity: ^3.0.6
+  #connectivity: ^3.0.6
   http: ^0.13.4
- # basic_utils: ^3.6.1
+  #basic_utils: ^3.6.1
   fluttertoast: ^8.0.8
   #flutter_jscore: ^1.0.0
   js_packer: ^0.0.5

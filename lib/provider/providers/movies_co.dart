@@ -61,6 +61,8 @@ class MoviesCo extends Provider with MoviesCoAPI {
 
   @override
   Future<PassableURL> requestTVShowLink(TVShow watchable, int season, int episode) async {
+    print("formatTvRequest(watchable, season, episode)");
+
     var response = await http.get(Uri.parse(formatTvRequest(watchable, season, episode)),
         headers: {'User-Agent': getRandomUserAgent()});
 

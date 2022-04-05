@@ -23,9 +23,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Viddroid',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.amber,
       ),
-      home: const MyHomePage(title: 'Watchables'),
+      darkTheme: ThemeData(
+        primarySwatch: Colors.amber,
+        brightness: Brightness.dark,
+      ),
+      themeMode: ThemeMode.system,
+      home: const MyHomePage(title: 'Viddroid'),
     );
   }
 }

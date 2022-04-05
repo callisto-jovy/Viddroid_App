@@ -10,6 +10,7 @@ import 'package:viddroid_flutter/util/passable_url.dart';
 import '../streamer.dart';
 
 class Gomo extends Streamer with MoviesCoAPI {
+
   @override
   Future<PassableURL> resolveStreamURL(String? referral, {Map<String, String>? headers}) async {
     if (referral == null) {
