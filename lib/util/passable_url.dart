@@ -1,7 +1,8 @@
-class PassableURL {
+class PremadeRequestURL {
   final String url;
 
-  Map<String, String>? headers;
+  Map<String, dynamic>? headers;
 
-  PassableURL(this.url, {this.headers});
+  PremadeRequestURL(this.url, {this.headers});
+
 }

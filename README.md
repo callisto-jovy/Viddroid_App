@@ -10,4 +10,3 @@ Recreation of the Viddroid Android-TV application, in order to get the flutter &
   - [JS_Packer](https://pub.dev/packages/js_packer) to unpack P.A.C.K.E.D JavaScript
   - [Video_Player](https://pub.dev/packages/video_player) to play videos
   - [Chewie](https://pub.dev/packages/chewie) to add material controls to the video player
-  - 

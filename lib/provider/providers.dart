@@ -1,32 +1,14 @@
-import 'package:viddroid_flutter/provider/provider.dart';
-import 'package:viddroid_flutter/provider/providers/best_movies_watch.dart';
-import 'package:viddroid_flutter/provider/providers/movies_co.dart';
-import 'package:viddroid_flutter/provider/providers/video_vak_com.dart';
+import 'package:viddroid_flutter/tasks/provider_task.dart';
+import 'package:viddroid_flutter/util/passable_url.dart';
+import 'package:viddroid_flutter/watchable/watchable.dart';
 
-enum Providers { moviesCo, bestmoviesWatch, videovakCom }
-
-extension ProvidersExtension on Providers {
-  String get name {
-    switch (this) {
-      case Providers.moviesCo:
-        return 'Movies.Co';
-      case Providers.bestmoviesWatch:
-        return 'Bestmovies.watch';
-      case Providers.videovakCom:
-        return 'Videovak.com';
-      default:
-        return 'null';
-    }
+class Providers {
+  static Future<PremadeRequestURL> requestMovieLink(String provider, Movie movie) {
+    return ProvideWatchableTask().providerMovie(provider, movie);
   }
 
-  Provider get provider {
-    switch (this) {
-      case Providers.moviesCo:
-        return MoviesCo();
-      case Providers.bestmoviesWatch:
-        return BestMoviesWatch();
-      case Providers.videovakCom:
-        return VideoVakCom();
-    }
+  static Future<PremadeRequestURL> requestTVShowLink(
+      String provider, final TVShow watchable, final int season, final int episode) {
+    return ProvideWatchableTask().providerTV(provider, watchable, season, episode);
   }
 }

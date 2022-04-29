@@ -2,10 +2,25 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:viddroid_flutter/connection/random_user_agent.dart';
+import 'package:viddroid_flutter/constants.dart';
 import 'package:viddroid_flutter/themoviedb/themoviedb.dart' as the_movie_db;
 import 'package:viddroid_flutter/watchable/episode.dart';
 import 'package:viddroid_flutter/watchable/season.dart';
 import 'package:viddroid_flutter/watchable/watchable.dart';
+
+class ViddroidAPIProvidersTask {
+  Future<List> call() async {
+    var resp = await http
+        .get(Uri.parse("${Constants.viddroidApi}/providers"))
+        .then((value) => jsonDecode(value.body));
+
+    if (resp["status_code"] == 200) {
+      return (resp["payload"] as List).map((e) => e["name"]).toList();
+    } else {
+      return ["null"];
+    }
+  }
+}
 
 class TheMovieDBSearchMovieTask {
   Future<List> call(String query) async {

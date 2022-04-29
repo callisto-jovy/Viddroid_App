@@ -18,17 +18,17 @@ class VideoVakComAPI {
       '$baseURL/series/$title/S${season}E$episode';
 
   String formatStreamTemp(final String title, final int season, final int episode) =>
-      StringUtil.underscores(
-          '${title.toLowerCase()} s${season.toString().padLeft(2, '0')}e${episode.toString().padLeft(2, '0')}');
+      '${title.toLowerCase()} s${season.toString().padLeft(2, '0')}e${episode.toString().padLeft(2, '0')}'
+          .underscores();
 }
 
 class VideoVakCom extends Provider with VideoVakComAPI {
   @override
-  Future<PassableURL> requestMovieLink(Movie watchable) =>
+  Future<PremadeRequestURL> requestMovieLink(Movie watchable) =>
       Future.error('Videovak only hosts tv shows');
 
   @override
-  Future<PassableURL> requestTVShowLink(TVShow watchable, int season, int episode) async {
+  Future<PremadeRequestURL> requestTVShowLink(TVShow watchable, int season, int episode) async {
     var response = await http.post(Uri.parse(streamAPIResolverEndpoint), body: {
       'temp_request': formatStreamTemp(watchable.title!, season, episode),
     }, headers: {
@@ -50,7 +50,7 @@ class VideoVakCom extends Provider with VideoVakComAPI {
       String embed =
           streamAPIStreamFormatEndpoint + (bodySplit.length == 1 ? bodySplit[0] : bodySplit[1]);
 
-      return PassableURL(embed, headers: {
+      return PremadeRequestURL(embed, headers: {
         'User-Agent': getRandomUserAgent(),
         'Referrer': baseURL,
         'Range': 'bytes=0-',

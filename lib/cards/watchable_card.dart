@@ -28,7 +28,7 @@ class WatchableCard extends StatelessWidget {
       child: GeneralPurposeCard(
           title: _watchable.title,
           description: _watchable.description,
-          lowerCaption: (_watchable is TVShow) ? 'TV-Show' : 'Movie',
+          lowerCaption: (_watchable is TVShow) ? "TV-Show" : "Movie",
           imageURL: _watchable.getCardImage(),
           imageWidth: 100,
           imageHeight: 150,

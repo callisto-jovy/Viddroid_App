@@ -1,17 +1,17 @@
 import 'dart:io';
 
-class StringUtil {
-  static const String allowedURLSpecialChars = r'[^–\p{L}\p{N}]';
-
-  static String dashes(final String string) =>
-      string.replaceAll(RegExp(allowedURLSpecialChars, unicode: true), " ").trim().replaceAll(RegExp(r'\s+'), "-");
-
-  static String underscores(final String string) =>
-      string.replaceAll(RegExp(allowedURLSpecialChars, unicode: true), " ").trim().replaceAll(RegExp(r'\s+'), "_");
-}
-
 extension StringExtension on String {
   bool equalsIgnoreCase(String comparison) => comparison.toLowerCase() == toLowerCase();
+
+  static const String allowedURLSpecialChars = r'[^–\p{L}\p{N}]';
+
+  String dashes() => replaceAll(RegExp(allowedURLSpecialChars, unicode: true), " ")
+      .trim()
+      .replaceAll(RegExp(r'\s+'), "-");
+
+  String underscores() => replaceAll(RegExp(allowedURLSpecialChars, unicode: true), " ")
+      .trim()
+      .replaceAll(RegExp(r'\s+'), "_");
 }
 
 extension StringNullableExtension on String? {

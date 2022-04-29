@@ -6,7 +6,8 @@ import 'package:viddroid_flutter/util/passable_url.dart';
 
 class StreamSB extends Streamer with MoviesCoAPI {
   @override
-  Future<PassableURL> resolveStreamURL(String? referral, {Map<String, String>? headers}) async {
+  Future<PremadeRequestURL> resolveStreamURL(String? referral,
+      {Map<String, String>? headers}) async {
     if (referral == null) {
       return Future.error('StreamSB referral is null');
     }
@@ -32,7 +33,8 @@ class StreamSB extends Streamer with MoviesCoAPI {
         if (response.statusCode == 200) {
           RegExpMatch? directDownloadMatcher = directDownloadRegex.firstMatch(response.body);
           if (directDownloadMatcher != null) {
-            return PassableURL(directDownloadMatcher.group(1)!, headers: {'Referrer': downloadURL});
+            return PremadeRequestURL(directDownloadMatcher.group(1)!,
+                headers: {'Referrer': downloadURL});
           } else {
             return Future.error('direct download match failed');
           }

@@ -17,11 +17,11 @@ class WatchableDetails extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Text(
-            title ?? 'No title available',
+            title ?? "No title available",
             style: Theme.of(context).textTheme.headline4,
           ),
           Text(
-            description ?? 'No description available',
+            description ?? "No description available",
             style: Theme.of(context).textTheme.bodyText1,
           ),
         ],

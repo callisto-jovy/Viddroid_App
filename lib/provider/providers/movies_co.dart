@@ -1,16 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:html/dom.dart';
-import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:viddroid_flutter/connection/random_user_agent.dart';
+import 'package:viddroid_flutter/constants.dart';
 import 'package:viddroid_flutter/provider/provider.dart';
-import 'package:viddroid_flutter/streamer/streamers.dart';
 import 'package:viddroid_flutter/util/basic_util.dart';
 import 'package:viddroid_flutter/util/passable_url.dart';
 import 'package:viddroid_flutter/watchable/watchable.dart';
 
 class MoviesCoAPI {
+  /*
   String baseURL = "https://www1.123movies.co";
   String movieEndpoint = "/movie/";
   String tvEndpoint = "/episode/";
@@ -27,8 +27,9 @@ class MoviesCoAPI {
 
   //Pattern UNPACKER_PATTERN = Pattern.compile("eval\\(function\\(p,a,c,k,e,d\\)(.*)+\\)");
 
-  RegExp sourceRegex = RegExp(r'(?<=sources:\[\{file:")[^"]+');
-
+  RegExp sourceRegex = RegExp(r'
+  (?<=sources:\[\{file:")[^"]+');
+  */
   RegExp onClickRegex =
       RegExp(r"""onclick="download_video\('([^']+)','([^']+)','([^']+)'\)""", multiLine: true);
 
@@ -36,46 +37,41 @@ class MoviesCoAPI {
       RegExp(r"""<a href="([^"]+)">Direct Download Link</a>""", multiLine: true);
 
   String formatTvRequest(final TVShow tvShow, final int season, final int episode) =>
-      "$baseURL$tvEndpoint${StringUtil.dashes(tvShow.title!)}-${season}x$episode/watching.html";
+      "${Constants.viddroidApiTV}/moviesco?id=0000&title=${tvShow.title!.dashes()}&season=$season&episode=$episode";
 
   String formatMovieRequest(final Movie movie) =>
-      "$baseURL$movieEndpoint${StringUtil.dashes(movie.title!)}/watching.html";
+      "${Constants.viddroidApiMovie}/moviesco?id=0000&title=${movie.title!.dashes()}";
 }
 
 class MoviesCo extends Provider with MoviesCoAPI {
   @override
-  Future<PassableURL> requestMovieLink(Movie watchable) async {
+  Future<PremadeRequestURL> requestMovieLink(Movie watchable) async {
     var response = await http.get(Uri.parse(formatMovieRequest(watchable)), headers: {
       'User-Agent': getRandomUserAgent(),
     });
 
-    if (response.statusCode == 200) {
-      var document = parse(response.body);
-      Element iFrame = document.getElementsByTagName('iframe').first;
+    var responseJSON = jsonDecode(response.body);
 
-      return Streamers.gomo.streamer!.resolveStreamURL(iFrame.attributes['src']);
+    if (responseJSON["status_code"] == 200) {
+      var payload = responseJSON["payload"];
+      return PremadeRequestURL(payload["url"], headers: payload["init"]);
     } else {
       return Future.error('Request Movie link');
     }
   }
 
   @override
-  Future<PassableURL> requestTVShowLink(TVShow watchable, int season, int episode) async {
-    print("formatTvRequest(watchable, season, episode)");
-
+  Future<PremadeRequestURL> requestTVShowLink(TVShow watchable, int season, int episode) async {
     var response = await http.get(Uri.parse(formatTvRequest(watchable, season, episode)),
         headers: {'User-Agent': getRandomUserAgent()});
 
-    if (response.statusCode == 200) {
-      var document = parse(response.body);
-      Element? iFrame = document.querySelector('.playerLock > iframe');
-      if (iFrame == null) {
-        return Future.error('iframe not found');
-      } else {
-        return Streamers.gomo.streamer!.resolveStreamURL(iFrame.attributes['src']);
-      }
+    var responseJSON = jsonDecode(response.body);
+
+    if (responseJSON["status_code"] == 200) {
+      var payload = responseJSON["payload"];
+      return PremadeRequestURL(payload["url"], headers: payload["init"]);
     } else {
-      return Future.error('Request Tv Link');
+      return Future.error('Request Movie link');
     }
   }
 }

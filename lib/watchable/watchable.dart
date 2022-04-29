@@ -42,6 +42,7 @@ class TVShow extends Watchable {
   TVShow(dynamic json)
       : super(
             json['id'], json['name'], json['overview'], json['backdrop_path'], json['poster_path']);
+
   void addSeason(int index, Season season) =>
       index == -1 ? _seasons.add(season) : _seasons[index] = season;
 

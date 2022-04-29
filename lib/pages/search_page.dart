@@ -25,21 +25,21 @@ class SearchPageState extends State<SearchPage> {
   }
 
   void search(String value) async {
-    List<Watchable> watchables = <Watchable>[];
+    final List<Watchable> _watchables = <Watchable>[];
 
     await TheMovieDBSearchMovieTask()
         .call(value)
         .then((value) => value.map((e) => Movie(e)).forEach((element) {
-              watchables.add(element);
+              _watchables.add(element);
             }));
 
     await TheMovieDBSearchTVTask()
         .call(value)
         .then((value) => value.map((e) => TVShow(e)).forEach((element) {
-              watchables.add(element);
+              _watchables.add(element);
             }));
 
-    _searchResults.add(watchables);
+    _searchResults.add(_watchables);
   }
 
   @override

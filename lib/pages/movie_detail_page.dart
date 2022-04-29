@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:viddroid_flutter/cards/general_purpose_card.dart';
 import 'package:viddroid_flutter/provider/providers.dart';
+import 'package:viddroid_flutter/tasks/request_metadata_task.dart';
 import 'package:viddroid_flutter/watchable/watchable.dart';
 import 'package:viddroid_flutter/widgets/widgets_viddroid.dart';
 
@@ -14,11 +15,12 @@ class MovieDetailPage extends StatefulWidget {
   const MovieDetailPage(this._movie, {Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => MovieDetailPageState();
+  State<StatefulWidget> createState() => _MovieDetailPageState();
 }
 
-class MovieDetailPageState extends State<MovieDetailPage> {
+class _MovieDetailPageState extends State<MovieDetailPage> {
   int _selectedProvider = 0;
+  List _providers = [];
 
   Widget get episode {
     return Container(
@@ -32,8 +34,9 @@ class MovieDetailPageState extends State<MovieDetailPage> {
               description: widget._movie.description,
               imageHeight: 169 / 1.5,
               imageWidth: 300 / 1.5,
-              onTap: () => Providers.values[_selectedProvider].provider
-                      .requestMovieLink(widget._movie)
+              onTap: () => _providers.isEmpty
+                  ? null
+                  : Providers.requestMovieLink(_providers[_selectedProvider], widget._movie)
                       .then((value) =>
                           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                             return VideoPlayer(
@@ -41,11 +44,10 @@ class MovieDetailPageState extends State<MovieDetailPage> {
                             );
                           })))
                       .catchError((e) {
-                    print(e);
-                    Fluttertoast.showToast(
-                        msg: 'Provider not available: $e', toastLength: Toast.LENGTH_LONG);
-                    return -1;
-                  }))
+                      Fluttertoast.showToast(
+                          msg: 'Provider not available: $e', toastLength: Toast.LENGTH_LONG);
+                      return -1;
+                    }))
         ],
       ),
     );
@@ -54,21 +56,30 @@ class MovieDetailPageState extends State<MovieDetailPage> {
   Widget get providerSelector {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
-      alignment: Alignment.center,
-      child: DropdownButton(
-        hint: const Text('Providers'),
-        value: _selectedProvider,
-        items: [
-          for (Providers p in Providers.values)
-            DropdownMenuItem(
-              child: Text(p.name),
-              value: p.index,
-            )
-        ],
-        onChanged: (value) {
-          setState(() {
-            _selectedProvider = value as int;
-          });
+      child: FutureBuilder(
+        future: ViddroidAPIProvidersTask().call(),
+        builder: (context, AsyncSnapshot<List> snapshot) {
+          if (snapshot.hasData) {
+            _providers = snapshot.data!;
+            return DropdownButton(
+              hint: const Text('Providers'),
+              value: _selectedProvider,
+              items: [
+                for (int i = 0; i < snapshot.data!.length; i++)
+                  DropdownMenuItem(
+                    child: Text(snapshot.data![i]),
+                    value: i,
+                  )
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _selectedProvider = value as int;
+                });
+              },
+            );
+          } else {
+            return const CircularProgressIndicator();
+          }
         },
       ),
     );

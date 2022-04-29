@@ -25,6 +25,7 @@ class TVShowDetailPage extends StatefulWidget {
 class TVShowDetailPageState extends State<TVShowDetailPage> {
   int _selectedSeason = 0;
   int _selectedProvider = 0;
+  List _providers = [];
 
   final StreamController<List<Episode>> _episodes = StreamController<List<Episode>>();
 
@@ -47,21 +48,23 @@ class TVShowDetailPageState extends State<TVShowDetailPage> {
                 Episode data = snapshot.data![index];
                 return GeneralPurposeCard(
                   title: data.name,
-                  upperCaption: 'Episode ${data.index}',
-                  onTap: () => Providers.values[_selectedProvider].provider
-                      .requestTVShowLink(widget._tv, data.season, data.index + 1)
-                      .then((value) =>
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                            return VideoPlayer(
-                              passableURL: value,
-                            );
-                          })))
-                      .catchError((e) {
-                    print(e);
-                    Fluttertoast.showToast(
-                        msg: 'Provider not available: $e', toastLength: Toast.LENGTH_LONG);
-                    return -1;
-                  }),
+                  upperCaption: 'Episode ${data.index + 1}',
+                  onTap: () => _providers.isEmpty
+                      ? null
+                      : Providers.requestTVShowLink(_providers[_selectedProvider], widget._tv,
+                              data.season, data.index + 1)
+                          .then((value) =>
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                                return VideoPlayer(
+                                  passableURL: value,
+                                );
+                              })))
+                          .catchError((e) {
+                          print(e);
+                          Fluttertoast.showToast(
+                              msg: 'Provider not available: $e', toastLength: Toast.LENGTH_LONG);
+                          return -1;
+                        }),
                   imageHeight: 169 / 1.5,
                   imageWidth: 300 / 1.5,
                   imageURL: data.getSeasonPosterPath(),
@@ -110,20 +113,30 @@ class TVShowDetailPageState extends State<TVShowDetailPage> {
   Widget get providerSelector {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
-      child: DropdownButton(
-        hint: const Text('Providers'),
-        value: _selectedProvider,
-        items: [
-          for (Providers p in Providers.values)
-            DropdownMenuItem(
-              child: Text(p.name),
-              value: p.index,
-            )
-        ],
-        onChanged: (value) {
-          setState(() {
-            _selectedProvider = value as int;
-          });
+      child: FutureBuilder(
+        future: ViddroidAPIProvidersTask().call(),
+        builder: (context, AsyncSnapshot<List> snapshot) {
+          if (snapshot.hasData) {
+            _providers = snapshot.data!;
+            return DropdownButton(
+              hint: const Text('Providers'),
+              value: _selectedProvider,
+              items: [
+                for (int i = 0; i < _providers.length; i++)
+                  DropdownMenuItem(
+                    child: Text(_providers[i]),
+                    value: i,
+                  )
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _selectedProvider = value as int;
+                });
+              },
+            );
+          } else {
+            return const CircularProgressIndicator();
+          }
         },
       ),
     );

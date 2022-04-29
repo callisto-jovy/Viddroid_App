@@ -12,12 +12,12 @@ class BestMoviesWatchAPI {
   String baseURL = 'https://best-movies.watch';
 
   String formatMovieRequest(final String title, final int id) =>
-      '$baseURL/movie/$id-${StringUtil.dashes(title)}';
+      '$baseURL/movie/$id-${title.dashes()}';
 }
 
 class BestMoviesWatch extends Provider with BestMoviesWatchAPI {
   @override
-  Future<PassableURL> requestMovieLink(Movie watchable) async {
+  Future<PremadeRequestURL> requestMovieLink(Movie watchable) async {
     if (watchable.title != null) {
       var resp = await http.get(Uri.parse(formatMovieRequest(watchable.title!, watchable.id)),
           headers: {'user-agent': getRandomUserAgent()});
@@ -39,7 +39,7 @@ class BestMoviesWatch extends Provider with BestMoviesWatchAPI {
   }
 
   @override
-  Future<PassableURL> requestTVShowLink(TVShow watchable, int season, int episode) {
+  Future<PremadeRequestURL> requestTVShowLink(TVShow watchable, int season, int episode) {
     return Future.error('bestmovies.watch only supplied movies');
   }
 }

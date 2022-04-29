@@ -6,7 +6,7 @@ import 'package:viddroid_flutter/util/passable_url.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayer extends StatefulWidget {
-  final PassableURL passableURL;
+  final PremadeRequestURL passableURL;
 
   const VideoPlayer({Key? key, required this.passableURL}) : super(key: key);
 
@@ -23,8 +23,11 @@ class _VideoPlayerState extends State<VideoPlayer> {
     super.initState();
     _videoPlayerController = VideoPlayerController.network(
       widget.passableURL.url,
-      httpHeaders: widget.passableURL.headers ??= {'User-Agent': getRandomUserAgent()},
+      httpHeaders: widget.passableURL.headers != null
+          ? (widget.passableURL.headers!.map((key, value) => MapEntry(key, value.toString())))
+          : {"User-Agent": getRandomUserAgent()},
     );
+
     _chewieController = ChewieController(
         videoPlayerController: _videoPlayerController,
         autoInitialize: true,

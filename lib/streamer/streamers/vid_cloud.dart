@@ -9,7 +9,8 @@ import 'package:viddroid_flutter/util/passable_url.dart';
 
 class VidCloud extends Streamer {
   @override
-  Future<PassableURL> resolveStreamURL(String? referral, {Map<String, String>? headers}) async {
+  Future<PremadeRequestURL> resolveStreamURL(String? referral,
+      {Map<String, String>? headers}) async {
     if (referral == null) {
       return Future.error('Vidcloud referral is null');
     }
@@ -53,7 +54,7 @@ class VidCloud extends Streamer {
           }
         }
       } else {
-        return PassableURL(bestStream.attributes['href']!, headers: {
+        return PremadeRequestURL(bestStream.attributes['href']!, headers: {
           'User-Agent': getRandomUserAgent(),
         });
       }
